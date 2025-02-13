@@ -3,7 +3,7 @@ import pandas as pd
 
 # Carregamento dos dados dos arquivos Excel
 try:
-    mtz_data = pd.read_excel("./ESTOQUE VG 12-02-2025.xlsx")
+    mtz_data = pd.read_excel(".ESTOQUE VG 12-02-2025.xlsx")
     roo_data = pd.read_excel("./ESTOQUE VG 12-02-2025.xlsx")  # Substitua pelo arquivo correto
     snp_data = pd.read_excel("./ESTOQUE VG 12-02-2025.xlsx")  # Substitua pelo arquivo correto
     cg_data = pd.read_excel("./ESTOQUE VG 12-02-2025.xlsx")  # Substitua pelo arquivo correto
