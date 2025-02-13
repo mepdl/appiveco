@@ -1,32 +1,14 @@
 import streamlit as st
 import pandas as pd
+import plotly.graph_objects as go
 
-# Carregamento dos dados
-try:
-    mtz_data = pd.read_excel("./ESTOQUE VG 12-02-2025.xlsx")
-    # ... (carregue os outros arquivos Excel)
-except FileNotFoundError:
-    st.error("Erro: Arquivo Excel não encontrado. Verifique o caminho.")
-    st.stop()
+st.set_page_config(layout="wide")
 
-# Conversão da coluna "ANO" para datetime year
-try:
-    mtz_data["ANO"] = pd.to_datetime(mtz_data["ANO"], format="%Y").dt.year
-    # ... (faça o mesmo para os outros DataFrames)
-except ValueError:
-    st.error("Erro: A coluna 'ANO' contém valores inválidos. Verifique o formato.")
-
-# Conversão da coluna "MODELO" para datetime year (se aplicável)
-# Se a coluna "MODELO" contiver o ano, você pode usar uma função para extraí-lo
-# Exemplo:
-def extrair_ano_modelo(modelo):
-    # Use expressões regulares para encontrar o ano no modelo
-    # ...
-    return ano
-
-# mtz_data["MODELO_ANO"] = mtz_data["MODELO"].apply(extrair_ano_modelo)
-# mtz_data["MODELO_ANO"] = pd.to_datetime(mtz_data["MODELO_ANO"], format="%Y").dt.year
-# ... (faça o mesmo para os outros DataFrames)
+# Carregamento dos dados dos arquivos Excel
+mtz_data = pd.read_excel("ESTOQUE VG.xlsx")
+roo_data = pd.read_excel("ESTOQUE ROO.xlsx")
+snp_data = pd.read_excel("ESTOQUE ROO.xlsx")
+cg_data = pd.read_excel("ESTOQUE VG.xlsx")
 
 # Título da aplicação
 st.title("Aplicação de Dados de Veículos")
@@ -34,12 +16,41 @@ st.title("Aplicação de Dados de Veículos")
 # Menu de seleção
 opcao = st.selectbox("Selecione uma opção:", ["MTZ", "ROO", "SNP", "CG"])
 
-# Exibição da tabela (com filtro por ano)
+# Função para exibir a tabela com filtros e gráfico de pizza
+def exibir_tabela(data):
+    # Cálculo das quantidades e porcentagens por segmento
+    contagem_segmentos = data["SEGMENTO"].value_counts()
+    porcentagem_segmentos = contagem_segmentos / contagem_segmentos.sum() * 100
+
+    # Criação do gráfico de pizza com título
+    fig = go.Figure(data=[go.Pie(labels=contagem_segmentos.index, 
+                                 values=contagem_segmentos.values,
+                                 hoverinfo='label+percent', 
+                                 textinfo='value')],
+                     layout=go.Layout(title="Distribuição de Veículos por Segmento"))  # Adiciona o título aqui
+
+    st.plotly_chart(fig)  # Exibe o gráfico de pizza primeiro
+
+    # Filtro por STATUS
+    status = st.multiselect("Selecione o(s) STATUS para filtrar:", data["STATUS"].unique())
+    if status:
+        tabela_filtrada = data[data["STATUS"].isin(status)]
+    else:
+        tabela_filtrada = data.copy()  # Exibe todos os dados se nenhum status for selecionado
+
+    # Filtro por SEGMENTO
+    segmento = st.multiselect("Selecione o(s) SEGMENTO(s) para filtrar:", data["SEGMENTO"].unique())
+    if segmento:
+        tabela_filtrada = tabela_filtrada[tabela_filtrada["SEGMENTO"].isin(segmento)]
+
+    st.data_editor(tabela_filtrada, height=400)  # Tabela interativa com quebra de texto automática
+
+# Exibição da tabela de acordo com a opção selecionada
 if opcao == "MTZ":
-    st.write(mtz_data)
+    exibir_tabela(mtz_data)
 elif opcao == "ROO":
-    st.write(roo_data)
+    exibir_tabela(roo_data)
 elif opcao == "SNP":
-    st.write(snp_data)
+    exibir_tabela(snp_data)
 elif opcao == "CG":
-    st.write(cg_data)
+    exibir_tabela(cg_data)
