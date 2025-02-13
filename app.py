@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 
 # Carregamento dos dados dos arquivos Excel
-mtz_data = pd.read_excel("ESTOQUE VG 12-02-2025.xlsx")
+mtz_data = pd.read_excel("./ESTOQUE VG 12-02-2025.xlsx")
 roo_data = pd.read_excel("ESTOQUE VG 12-02-2025.xlsx")
 snp_data = pd.read_excel("ESTOQUE VG 12-02-2025.xlsx")
 cg_data = pd.read_excel("ESTOQUE VG 12-02-2025.xlsx")
