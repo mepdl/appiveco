@@ -27,23 +27,32 @@ def exibir_tabela(data):
                                  values=contagem_segmentos.values,
                                  hoverinfo='label+percent', 
                                  textinfo='value')],
-                     layout=go.Layout(title="Distribuição de Veículos por Segmento"))  # Adiciona o título aqui
+                     layout=go.Layout(title="Distribuição de Veículos por Segmento"))
 
-    st.plotly_chart(fig)  # Exibe o gráfico de pizza primeiro
+    st.plotly_chart(fig)
 
     # Filtro por STATUS
     status = st.multiselect("Selecione o(s) STATUS para filtrar:", data["STATUS"].unique())
     if status:
         tabela_filtrada = data[data["STATUS"].isin(status)]
     else:
-        tabela_filtrada = data.copy()  # Exibe todos os dados se nenhum status for selecionado
+        tabela_filtrada = data.copy()
 
     # Filtro por SEGMENTO
     segmento = st.multiselect("Selecione o(s) SEGMENTO(s) para filtrar:", data["SEGMENTO"].unique())
     if segmento:
         tabela_filtrada = tabela_filtrada[tabela_filtrada["SEGMENTO"].isin(segmento)]
 
-    st.data_editor(tabela_filtrada, height=400)  # Tabela interativa com quebra de texto automática
+    # Exibição da tabela interativa
+    tabela_filtrada = st.data_editor(tabela_filtrada, height=400, key="data_editor")
+
+    # Obtenção do índice da linha selecionada
+    if st.session_state.get("data_editor") is not None and st.session_state.data_editor["edited_rows"]:
+        indice_selecionado = st.session_state.data_editor["edited_rows"][0]["index"]
+
+        # Exibição das informações detalhadas
+        st.subheader("Informações Detalhadas do Modelo Selecionado")
+        st.write(tabela_filtrada.loc[[indice_selecionado], ["MODELO", "ANO", "IMPLEMENTO", "TOTAL (R$)", "COR", "MARCA PNEU", "STATUS"]])
 
 # Exibição da tabela de acordo com a opção selecionada
 if opcao == "MTZ":
