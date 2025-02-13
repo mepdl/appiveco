@@ -50,9 +50,14 @@ def exibir_tabela(data):
     if st.session_state.get("data_editor") is not None and st.session_state.data_editor["edited_rows"]:
         indice_selecionado = st.session_state.data_editor["edited_rows"][0]["index"]
 
-        # Exibição das informações detalhadas
+        # Exibição das informações detalhadas (corrigido)
+        colunas_selecionadas = ["MODELO", "ANO", "IMPLEMENTO", "TOTAL (R$)", "COR", "MARCA PNEU", "STATUS"]
         st.subheader("Informações Detalhadas do Modelo Selecionado")
-        st.write(tabela_filtrada.loc[[indice_selecionado], ["MODELO", "ANO", "IMPLEMENTO", "TOTAL (R$)", "COR", "MARCA PNEU", "STATUS"]])
+
+        # Filtrar tabela_filtrada para conter apenas as colunas selecionadas
+        tabela_filtrada = tabela_filtrada[colunas_selecionadas]
+
+        st.write(tabela_filtrada.loc[[indice_selecionado]])
 
 # Exibição da tabela de acordo com a opção selecionada
 if opcao == "MTZ":
